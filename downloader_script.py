@@ -20,8 +20,8 @@ def get_playlist_video(link, file_path):
 
 
 def convert_to_audio(title, file_path):
-    # getting rid of the "lost" symbols (apparently got fixed in later PyTube releases),at least "!" (exclamation mark)
-    symbols_to_delete = [".", ",", ";", "$", ":", "/"]
+    # getting rid of the "lost" symbols (apparently got fixed in later PyTube releases),at least "!"(exclamation mark)
+    symbols_to_delete = [",", ";", "$", ":", "/", "."]
     filename = "".join([i for i in title if i not in symbols_to_delete])
 
     # conversion to mp3
@@ -68,7 +68,11 @@ def get_audio_only(link, file_path):
 def get_playlist_audio(link, file_path):
     p = Playlist(link)
     for track in p.videos:
-        convert_to_audio(track.title, file_path)
+        print(track.embed_url)
+        track_file = track.streams.filter(progressive=True).get_lowest_resolution()
+        track_file .download(file_path)
+        convert_to_audio(track_file.title, file_path)
+
 
 
 def get_resolutions(link):

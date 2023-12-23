@@ -4,7 +4,7 @@ import configobj
 
 #TODO:
 # 1. Add telegram "hinting" for commands
-# 2. Exception and error handling (иначе всё нахуй упадет на облаке)
+# 2. Exception and error handling (иначе всё нахуй упадет на облаке/сервакe)
 # 3. Integration with Selenium to be able to download age restricted videos (for music lol)
 # 4. Figure out cloud hosting option.
 # 5. Ask people if they want to have an option to download video itself, not just audio.
@@ -54,7 +54,8 @@ def download_audio(message):
 
 @bot.message_handler(commands=['playlist'])
 def download_playlist(message):
-    pass
+    playlist_url = message.text.split()[1]
+    ds.get_playlist_audio(playlist_url, "./downloaded")
 
 
 bot.polling(none_stop=True)
