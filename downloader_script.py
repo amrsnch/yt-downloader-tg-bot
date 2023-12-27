@@ -43,32 +43,25 @@ def get_playlist_video(link, file_path):
 
 
 def convert_to_audio_modified(title, file_path):
+
+    """
+    Identical to the code above, however utilises ffmpeg for conversion. Might be troublesome if
+    you plan to deploy it on cloud premises. But might worth a try
+    """
     symbols_to_delete = [",", ";", "$", ":", "/", "."]
     filename = "".join([i for i in title if i not in symbols_to_delete])
 
-    mp4_file = os.path.join(file_path, f"{filename}.mp4")
-    mp3_file = os.path.join(file_path, f"{filename}.mp3")
+    mp4_file = os.path.join(file_path, f"{title}.mp4")
+    mp3_file = os.path.join(file_path, f"{title}.mp3")
 
-    file_video_str = f"{filename}.mp4"
-    file_audio_str = f"{filename}.mp3"
-
-    # subprocess.run([
-    #     'ffmpeg',
-    #     '-i', os.path.join(file_path, file_video_str),
-    #     os.path.join(file_path, file_audio_str)
-    # ])
-    ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ffmpeg')
+    file_video_str = f"{title}.mp4"
+    file_audio_str = f"{title}.mp3"
 
     subprocess.run([
-        ffmpeg_path,
+        'ffmpeg',
         '-i', mp4_file,
-        '-vn',
-        '-acodec', 'libmp3lame',
-        '-ar', '44100',
-        '-ac', '2',
-        '-ab', '192k',
         mp3_file
-    ])
+        ])
 
     return file_audio_str
 
@@ -107,6 +100,9 @@ def get_playlist_audio(link, file_path):
 
 
 def get_resolutions(link):
+    """
+    This function gets all possible resolutions of a given video, used in regular video download (without conversion)
+    """
     yt = YouTube(link)
     filter_stream_list = yt.streams.filter(file_extension='mp4', only_audio=False, type="video")
     resolutions_set = set()
