@@ -1,6 +1,7 @@
 from pytube import *
 from moviepy.editor import *
 import os
+import subprocess
 
 # TODO: 1. Let user choose a directory where they want to save a file. (Done)
 #       2. Add a dropdown to select a video quality. (irrelevant here, no Tkinter used)
@@ -19,26 +20,57 @@ def get_playlist_video(link, file_path):
         stream.download(file_path)
 
 
-def convert_to_audio(title, file_path):
-    # getting rid of the "lost" symbols (apparently got fixed in later PyTube releases),at least "!"(exclamation mark)
+# def convert_to_audio(title, file_path):
+#     # getting rid of the "lost" symbols (apparently got fixed in later PyTube releases),at least "!"(exclamation mark)
+#     symbols_to_delete = [",", ";", "$", ":", "/", "."]
+#     filename = "".join([i for i in title if i not in symbols_to_delete])
+#
+#     # conversion to mp3
+#     mp4_file = os.path.join(file_path, f"{filename}.mp4")
+#     mp3_file = os.path.join(file_path, f"{filename}.mp3")
+#     file_name_str = f"{filename}.mp3"
+#
+#     video_clip = VideoFileClip(mp4_file)
+#     audio_clip = video_clip.audio
+#
+#     audio_clip.write_audiofile(mp3_file)
+#     audio_clip.close()
+#     video_clip.close()
+#     # deleting a video fragment for audio only, later will be included to a separate function
+#     os.remove(os.path.join(file_path, f"{filename}.mp4"))
+#
+#     return file_name_str
+
+
+def convert_to_audio_modified(title, file_path):
     symbols_to_delete = [",", ";", "$", ":", "/", "."]
     filename = "".join([i for i in title if i not in symbols_to_delete])
 
-    # conversion to mp3
     mp4_file = os.path.join(file_path, f"{filename}.mp4")
     mp3_file = os.path.join(file_path, f"{filename}.mp3")
-    file_name_str = f"{filename}.mp3"
 
-    video_clip = VideoFileClip(mp4_file)
-    audio_clip = video_clip.audio
+    file_video_str = f"{filename}.mp4"
+    file_audio_str = f"{filename}.mp3"
 
-    audio_clip.write_audiofile(mp3_file)
-    audio_clip.close()
-    video_clip.close()
-    # deleting a video fragment for audio only, later will be included to a separate function
-    os.remove(os.path.join(file_path, f"{filename}.mp4"))
+    # subprocess.run([
+    #     'ffmpeg',
+    #     '-i', os.path.join(file_path, file_video_str),
+    #     os.path.join(file_path, file_audio_str)
+    # ])
+    ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ffmpeg')
 
-    return file_name_str
+    subprocess.run([
+        ffmpeg_path,
+        '-i', mp4_file,
+        '-vn',
+        '-acodec', 'libmp3lame',
+        '-ar', '44100',
+        '-ac', '2',
+        '-ab', '192k',
+        mp3_file
+    ])
+
+    return file_audio_str
 
 
 def get_audio_only(link, file_path):
@@ -62,7 +94,7 @@ def get_audio_only(link, file_path):
     #         if entry == (yt.title+'.mp4'):
     #             print("IT'S LITERALLY HERE, WTF IS WRONG")
 
-    return convert_to_audio(stream.title, file_path)
+    return convert_to_audio_modified(stream.title, file_path)
 
 
 def get_playlist_audio(link, file_path):
@@ -70,9 +102,8 @@ def get_playlist_audio(link, file_path):
     for track in p.videos:
         print(track.embed_url)
         track_file = track.streams.filter(progressive=True).get_lowest_resolution()
-        track_file .download(file_path)
-        convert_to_audio(track_file.title, file_path)
-
+        track_file.download(file_path)
+        convert_to_audio_modified(track_file.title, file_path)
 
 
 def get_resolutions(link):
