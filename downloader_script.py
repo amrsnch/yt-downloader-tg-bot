@@ -45,8 +45,8 @@ def get_audio_only(link, file_path):
     """
     This function allows to download and extract an audio track of a particular YouTube video
     """
-    yt = YouTube(link, use_oauth=False, allow_oauth_cache=False)
-    print(yt.streams.filter(file_extension='mp4').first())  # idk what it does but let it hang there for a while
+    yt = YouTube(link, use_oauth=True, allow_oauth_cache=True)
+    # print(yt.streams.filter(file_extension='mp4').first())  # idk what it does but let it hang there for a while
     stream = yt.streams.filter(file_extension='mp4', progressive=True).first()
     stream.download(file_path)
 
