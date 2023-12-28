@@ -1,3 +1,5 @@
+import os
+
 import telebot
 import downloader_script as ds
 import configobj
@@ -15,6 +17,9 @@ config = configobj.ConfigObj('.env')
 API_KEY = config['API_KEY']
 
 bot = telebot.TeleBot(API_KEY)
+
+#Generic messages
+
 HELP_MSG = 'Just a help info for now...'
 
 WELCOME_MSG = """\
@@ -22,13 +27,23 @@ Hi there! I am Downloader test bot, Dev version.
 Just a kind words of greetings before we start testing!\
 """
 
-ERROR_MSG = """\
-Some error has occurred, please try again (Make more informative later on)
+AGE_ERROR_MSG = """\
+Video that you're trying to converted is age restricted and
+can't be downloaded at the moment (we're working very hard to resolve this issue)
 \
 """
 
+#potentailly I can return a link which leads to a downloaded file on server or increase allowed file size
+#by using a loophole with local server.
+SIZE_ERROR_MSG = """\
+The size of the audio is more than that Telegram can handle (20MB), please choose shorter track.
+\
+"""
 
-
+GENERAL_ERROR_MSG = """\
+Unexpected error has occurred, please resubmit your request.
+\
+"""
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -47,6 +62,11 @@ def send_help_message(message):
     """
     bot.send_message(message.chat.id, HELP_MSG)
 
+
+
+def check_file_size(file_path):
+    # in megabytes
+    return os.path.getsize(file_path)/(1024*1024)
 
 # Handle '/download' command
 @bot.message_handler(commands=['download'])
@@ -72,6 +92,10 @@ def download_audio(message):
 
         audio_path = f'./downloaded/{file_name}'
 
+        # FIX THIS PART!!!
+        if check_file_size(audio_path) > 50.0:
+            raise Exception(bot.send_message(message.chat.id, SIZE_ERROR_MSG))
+
         # audio_path = f'./downloaded/{file_name}'
         # bot.send_audio(chat_id=message.chat.id ,audio=open(f'./downloaded/{file_name}', encoding='cp850'))
 
@@ -81,9 +105,13 @@ def download_audio(message):
         # send output file to user
         bot.send_audio(chat_id=message.chat.id, audio=audio_file)
 
-    except:
+    except Exception as e:
+        if "age" in str(e):
+            bot.send_message(message.chat.id, str(e))
+            bot.send_message(message.chat.id, AGE_ERROR_MSG)
+        else:
+            bot.send_message(message.chat.id, GENERAL_ERROR_MSG)
 
-        bot.send_message(message.chat.id, ERROR_MSG)
     # seems like script crashes when I have something like this:
     # "𝕋𝕙𝕖 𝕃𝕠𝕤𝕥 𝕊𝕠𝕦𝕝 𝔻𝕠𝕨𝕟 𝕩 𝕃𝕠𝕤𝕥 𝕊𝕠𝕦𝕝 - ℕ𝔹𝕊ℙ𝕃𝕍 [ ℂ𝕙𝕒𝕚𝕟𝕤𝕒𝕨 𝕄𝕒𝕟 𝔾𝕚𝕣𝕝𝕤 // 𝟙 ℍ𝕠𝕦𝕣 ℂ𝕝𝕖𝕒𝕟 𝕃𝕠𝕠𝕡 ]"
     # I need to find a way to convert it to regular string without fancy bs. Oh wait, nvm.
