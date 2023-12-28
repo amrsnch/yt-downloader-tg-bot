@@ -15,12 +15,18 @@ config = configobj.ConfigObj('.env')
 API_KEY = config['API_KEY']
 
 bot = telebot.TeleBot(API_KEY)
-HELP = 'Just a help info for now...'
+HELP_MSG = 'Just a help info for now...'
 
 WELCOME_MSG = """\
 Hi there! I am Downloader test bot, Dev version.
 Just a kind words of greetings before we start testing!\
 """
+
+ERROR_MSG = """\
+Some error has occurred, please try again (Make more informative later on)
+\
+"""
+
 
 
 # Handle '/start' and '/help'
@@ -39,7 +45,7 @@ def send_help_message(message):
     Function description: Sends message with guide and instructions upon "\help" command.
     Approach description:
     """
-    bot.send_message(message.chat.id, HELP)
+    bot.send_message(message.chat.id, HELP_MSG)
 
 
 # Handle '/download' command
@@ -56,24 +62,28 @@ def download_audio(message):
     Output: None
     """
 
-    # split input text (i.e "/download {youtube_video_url}")
-    video_url = message.text.split()[1]
+    try:
+        # split input text (i.e "/download {youtube_video_url}")
+        video_url = message.text.split()[1]
 
-    # convert video and get file name
-    file_name = ds.get_audio_only(video_url, "./downloaded")
-    print(str(file_name))
+        # convert video and get file name
+        file_name = ds.get_audio_only(video_url, "./downloaded")
+        print(str(file_name))
 
-    audio_path = f'./downloaded/{file_name}'
+        audio_path = f'./downloaded/{file_name}'
 
-    # audio_path = f'./downloaded/{file_name}'
-    # bot.send_audio(chat_id=message.chat.id ,audio=open(f'./downloaded/{file_name}', encoding='cp850'))
+        # audio_path = f'./downloaded/{file_name}'
+        # bot.send_audio(chat_id=message.chat.id ,audio=open(f'./downloaded/{file_name}', encoding='cp850'))
 
-    # open audio with appropriate encoding
-    audio_file = open(audio_path, 'rb')
+        # open audio with appropriate encoding
+        audio_file = open(audio_path, 'rb')
 
-    # send output file to user
-    bot.send_audio(chat_id=message.chat.id, audio=audio_file)
+        # send output file to user
+        bot.send_audio(chat_id=message.chat.id, audio=audio_file)
 
+    except:
+
+        bot.send_message(message.chat.id, ERROR_MSG)
     # seems like script crashes when I have something like this:
     # "𝕋𝕙𝕖 𝕃𝕠𝕤𝕥 𝕊𝕠𝕦𝕝 𝔻𝕠𝕨𝕟 𝕩 𝕃𝕠𝕤𝕥 𝕊𝕠𝕦𝕝 - ℕ𝔹𝕊ℙ𝕃𝕍 [ ℂ𝕙𝕒𝕚𝕟𝕤𝕒𝕨 𝕄𝕒𝕟 𝔾𝕚𝕣𝕝𝕤 // 𝟙 ℍ𝕠𝕦𝕣 ℂ𝕝𝕖𝕒𝕟 𝕃𝕠𝕠𝕡 ]"
     # I need to find a way to convert it to regular string without fancy bs. Oh wait, nvm.
