@@ -5,11 +5,9 @@ import downloader_script as ds
 import configobj
 
 # TODO:
-# 1. Add telegram "hinting" for commands
-# 2. Exception and error handling (иначе всё нахуй упадет на облаке/сервакe)
-# 3. Integration with Selenium to be able to download age restricted videos (for music lol)
-# 4. Figure out cloud hosting option.
-# 5. Ask people if they want to have an option to download video itself, not just audio.
+# 1. Integration with Selenium to be able to download age restricted videos (for music lol)
+# 2. Figure out cloud hosting option.
+# 3. Ask people if they want to have an option to download video itself, not just audio.
 
 
 # extracting api key from .env file
@@ -18,7 +16,7 @@ API_KEY = config['API_KEY']
 
 bot = telebot.TeleBot(API_KEY)
 
-# Generic messages
+# Generic messages (might actually put them into a separate class and call them from there as it was taught in FIT2099
 
 HELP_MSG = 'Just a help info for now...'
 
@@ -46,7 +44,6 @@ Unexpected error has occurred, please resubmit your request.
 """
 
 
-# Handle '/start' and '/help'
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     """
@@ -65,9 +62,13 @@ def send_help_message(message):
     bot.send_message(message.chat.id, HELP_MSG)
 
 
-def check_file_size(file_path):
-    # in megabytes
-    return os.path.getsize(file_path) / (1024 * 1024)
+def get_file_size(file_path):
+    """
+    Function gets files size in megabytes and further we check if the
+    fits withing the Telegram's file size limit.
+    """
+
+    return os.path.getsize(file_path) / (1024 * 1024) # in megabytes
 
 
 # Handle '/download' command
@@ -77,7 +78,8 @@ def download_audio(message):
     Function description: This function responds to "\downlaad" command and triggers get_audio_only()
     function from ./downloader_script.py and sends converted mp3 file in Telegram chat.
 
-    Approach description:  ...
+    Note: Telegram bot file limit is 10 - 20 MB.
+    Approach description:
 
     Input:
         message: text message in form: "/download {youtube_video_url}"
@@ -94,12 +96,9 @@ def download_audio(message):
 
         audio_path = f'./downloaded/{file_name}'
 
-        # FIX THIS PART!!!
-        if check_file_size(audio_path) > 50.0:
+        if get_file_size(audio_path) > 50.0:
             bot.send_message(message.chat.id, SIZE_ERROR_MSG)
         else:
-            # audio_path = f'./downloaded/{file_name}'
-            # bot.send_audio(chat_id=message.chat.id ,audio=open(f'./downloaded/{file_name}', encoding='cp850'))
 
             # open audio with appropriate encoding
             audio_file = open(audio_path, 'rb')
@@ -109,7 +108,6 @@ def download_audio(message):
 
     except Exception as e:
         if "age" in str(e):
-            # bot.send_message(message.chat.id, str(e))
             bot.send_message(message.chat.id, AGE_ERROR_MSG)
         else:
             bot.send_message(message.chat.id, GENERAL_ERROR_MSG)
@@ -119,7 +117,7 @@ def download_audio(message):
     # I need to find a way to convert it to regular string without fancy bs. Oh wait, nvm.
     # Seems like vid itself is 1 hour long
     # Other thing I have to consider is deleting video when it failed to send it via telegramg. That makes sense.
-    # Telegram bot file limit is 10 MB.
+
 
 
 @bot.message_handler(commands=['playlist'])
@@ -128,12 +126,15 @@ def download_playlist(message):
     Function description: This function downloads an entire playlist
     provided by user and sends back audi of each track
 
+
+    Just a thought: Maybe I should use queue ADT from FIT1008...? Might actually work
     Approach description:
 
     Input:
         message: text message in form: "/download {youtube_playlist_url}"
     Output:
     """
+
     playlist_url = message.text.split()[1]
     ds.get_playlist_audio(playlist_url, "./downloaded")
 
