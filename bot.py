@@ -109,7 +109,7 @@ def download_audio(message):
 
     except Exception as e:
         if "age" in str(e):
-            bot.send_message(message.chat.id, str(e))
+            # bot.send_message(message.chat.id, str(e))
             bot.send_message(message.chat.id, AGE_ERROR_MSG)
         else:
             bot.send_message(message.chat.id, GENERAL_ERROR_MSG)
