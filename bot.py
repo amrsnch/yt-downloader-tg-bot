@@ -18,7 +18,7 @@ API_KEY = config['API_KEY']
 
 bot = telebot.TeleBot(API_KEY)
 
-#Generic messages
+# Generic messages
 
 HELP_MSG = 'Just a help info for now...'
 
@@ -33,8 +33,8 @@ can't be downloaded at the moment (we're working very hard to resolve this issue
 \
 """
 
-#potentailly I can return a link which leads to a downloaded file on server or increase allowed file size
-#by using a loophole with local server.
+# potentailly I can return a link which leads to a downloaded file on server or increase allowed file size
+# by using a loophole with local server.
 SIZE_ERROR_MSG = """\
 The size of the audio is more than that Telegram can handle (20MB), please choose shorter track.
 \
@@ -44,6 +44,8 @@ GENERAL_ERROR_MSG = """\
 Unexpected error has occurred, please resubmit your request.
 \
 """
+
+
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -63,10 +65,10 @@ def send_help_message(message):
     bot.send_message(message.chat.id, HELP_MSG)
 
 
-
 def check_file_size(file_path):
     # in megabytes
-    return os.path.getsize(file_path)/(1024*1024)
+    return os.path.getsize(file_path) / (1024 * 1024)
+
 
 # Handle '/download' command
 @bot.message_handler(commands=['download'])
@@ -94,16 +96,16 @@ def download_audio(message):
 
         # FIX THIS PART!!!
         if check_file_size(audio_path) > 50.0:
-            raise Exception(bot.send_message(message.chat.id, SIZE_ERROR_MSG))
+            bot.send_message(message.chat.id, SIZE_ERROR_MSG)
+        else:
+            # audio_path = f'./downloaded/{file_name}'
+            # bot.send_audio(chat_id=message.chat.id ,audio=open(f'./downloaded/{file_name}', encoding='cp850'))
 
-        # audio_path = f'./downloaded/{file_name}'
-        # bot.send_audio(chat_id=message.chat.id ,audio=open(f'./downloaded/{file_name}', encoding='cp850'))
+            # open audio with appropriate encoding
+            audio_file = open(audio_path, 'rb')
 
-        # open audio with appropriate encoding
-        audio_file = open(audio_path, 'rb')
-
-        # send output file to user
-        bot.send_audio(chat_id=message.chat.id, audio=audio_file)
+            # send output file to user
+            bot.send_audio(chat_id=message.chat.id, audio=audio_file)
 
     except Exception as e:
         if "age" in str(e):
