@@ -8,6 +8,7 @@ class InfoMessages:
     Just a kind words of greetings before we start testing!\
     """
 
+class ErrorMessages:
     AGE_ERROR_MSG = """\
     Video that you're trying to converted is age restricted and
     can't be downloaded at the moment (we're working very hard to resolve this issue)

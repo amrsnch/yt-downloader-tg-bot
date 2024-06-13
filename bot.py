@@ -2,7 +2,7 @@ import os
 import telebot
 import downloader_script as ds
 import configobj
-from info_messages import InfoMessages
+from info_messages import *
 
 # TODO:
 # 1. Integration with Selenium to be able to download age restricted videos (for music lol)
@@ -80,7 +80,7 @@ def download_audio(message):
         audio_path = f'./downloaded/{file_name}'
 
         if get_file_size(audio_path) > 50.0:
-            bot.send_message(message.chat.id, InfoMessages.SIZE_ERROR_MSG)
+            bot.send_message(message.chat.id, ErrorMessages.SIZE_ERROR_MSG)
         else:
 
             # open audio with appropriate encoding
@@ -91,9 +91,9 @@ def download_audio(message):
 
     except Exception as e:
         if "age" in str(e):
-            bot.send_message(message.chat.id, InfoMessages.AGE_ERROR_MSG)
+            bot.send_message(message.chat.id, ErrorMessages.AGE_ERROR_MSG)
         else:
-            bot.send_message(message.chat.id, InfoMessages.GENERAL_ERROR_MSG)
+            bot.send_message(message.chat.id, ErrorMessages.GENERAL_ERROR_MSG)
 
 
 @bot.message_handler(commands=['playlist'])
