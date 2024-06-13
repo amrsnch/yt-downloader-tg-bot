@@ -70,12 +70,24 @@ def get_file_size(file_path):
 
     return os.path.getsize(file_path) / (1024 * 1024) # in megabytes
 
-
 # Handle '/download' command
 @bot.message_handler(commands=['download'])
+def start_download(message):
+    """
+    Function description: This function responds to the "/download" command and prompts
+    the user to send a YouTube video URL.
+
+    Input:
+        message: text message containing the "/download" command
+    Output: None
+    """
+    bot.send_message(message.chat.id, "Please send the YouTube video URL you want to download:")
+    bot.register_next_step_handler(message, download_audio) # awaits for the message after
+
+
 def download_audio(message):
     """
-    Function description: This function responds to "\downlaad" command and triggers get_audio_only()
+    Function description: This function responds to "/download" command and triggers get_audio_only()
     function from ./downloader_script.py and sends converted mp3 file in Telegram chat.
 
     Note: Telegram bot file limit is 10 - 20 MB.
@@ -85,10 +97,9 @@ def download_audio(message):
         message: text message in form: "/download {youtube_video_url}"
     Output: None
     """
-
     try:
         # split input text (i.e "/download {youtube_video_url}")
-        video_url = message.text.split()[1]
+        video_url = message.text
 
         # convert video and get file name
         file_name = ds.get_audio_only(video_url, "./downloaded")
@@ -111,13 +122,6 @@ def download_audio(message):
             bot.send_message(message.chat.id, AGE_ERROR_MSG)
         else:
             bot.send_message(message.chat.id, GENERAL_ERROR_MSG)
-
-    # seems like script crashes when I have something like this:
-    # "𝕋𝕙𝕖 𝕃𝕠𝕤𝕥 𝕊𝕠𝕦𝕝 𝔻𝕠𝕨𝕟 𝕩 𝕃𝕠𝕤𝕥 𝕊𝕠𝕦𝕝 - ℕ𝔹𝕊ℙ𝕃𝕍 [ ℂ𝕙𝕒𝕚𝕟𝕤𝕒𝕨 𝕄𝕒𝕟 𝔾𝕚𝕣𝕝𝕤 // 𝟙 ℍ𝕠𝕦𝕣 ℂ𝕝𝕖𝕒𝕟 𝕃𝕠𝕠𝕡 ]"
-    # I need to find a way to convert it to regular string without fancy bs. Oh wait, nvm.
-    # Seems like vid itself is 1 hour long
-    # Other thing I have to consider is deleting video when it failed to send it via telegramg. That makes sense.
-
 
 
 @bot.message_handler(commands=['playlist'])
