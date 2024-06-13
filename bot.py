@@ -53,7 +53,7 @@ def start_download(message):
         message: text message containing the "/download" command
     Output: None
     """
-    bot.send_message(message.chat.id, "Please send the YouTube video URL you want to download:")
+    bot.send_message(message.chat.id, "Please send the YouTube video URL you want to download")
 
     # awaits for the message after
     bot.register_next_step_handler(message, download_audio)
@@ -108,7 +108,7 @@ def start_playlist_download(message):
         message: text message containing the "/download" command
     Output: None
     """
-    bot.send_message(message.chat.id, "Please send the YouTube video URL you want to download:")
+    bot.send_message(message.chat.id, "Please send the YouTube playlist URL you want to download")
 
     # awaits for the message after
     bot.register_next_step_handler(message, download_playlist)
