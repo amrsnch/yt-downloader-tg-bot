@@ -76,10 +76,10 @@ def download_audio(message):
         video_url = message.text
 
         # convert video and get file name
-        file_name = ds.get_audio_only(video_url, "./downloaded")
+        file_name = ds.get_audio_only(video_url, "./assets")
         print(str(file_name))
 
-        audio_path = f'./downloaded/{file_name}'
+        audio_path = f'./assets/{file_name}'
 
         if get_file_size(audio_path) > 50.0:
             bot.send_message(message.chat.id, ErrorMessages.SIZE_ERROR_MSG)
