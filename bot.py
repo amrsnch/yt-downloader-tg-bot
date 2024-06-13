@@ -54,7 +54,9 @@ def start_download(message):
     Output: None
     """
     bot.send_message(message.chat.id, "Please send the YouTube video URL you want to download:")
-    bot.register_next_step_handler(message, download_audio) # awaits for the message after
+
+    # awaits for the message after
+    bot.register_next_step_handler(message, download_audio)
 
 
 def download_audio(message):
@@ -96,6 +98,22 @@ def download_audio(message):
             bot.send_message(message.chat.id, ErrorMessages.GENERAL_ERROR_MSG)
 
 
+@bot.message_handler(commands=['download'])
+def start_playlist_download(message):
+    """
+    Function description: This function responds to the "/download" command and prompts
+    the user to send a YouTube video URL.
+
+    Input:
+        message: text message containing the "/download" command
+    Output: None
+    """
+    bot.send_message(message.chat.id, "Please send the YouTube video URL you want to download:")
+
+    # awaits for the message after
+    bot.register_next_step_handler(message, download_playlist)
+
+
 @bot.message_handler(commands=['playlist'])
 def download_playlist(message):
     """
@@ -111,7 +129,7 @@ def download_playlist(message):
     Output:
     """
 
-    playlist_url = message.text.split()[1]
+    playlist_url = message.text
     ds.get_playlist_audio(playlist_url, "./downloaded")
 
 
