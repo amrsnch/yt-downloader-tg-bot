@@ -19,7 +19,7 @@ bot = telebot.TeleBot(API_KEY)
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     """
-    Function description: Sends welcome message upon "\start" command.
+    Function description: Sends welcome message upon "/start" command.
     Approach description:
     """
     bot.reply_to(message, InfoMessages.WELCOME_MSG)
@@ -28,7 +28,7 @@ def send_welcome(message):
 @bot.message_handler(commands=['help'])
 def send_help_message(message):
     """
-    Function description: Sends message with guide and instructions upon "\help" command.
+    Function description: Sends message with guide and instructions upon "/help" command.
     Approach description:
     """
     bot.send_message(message.chat.id, InfoMessages.HELP_MSG)
