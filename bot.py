@@ -1,8 +1,8 @@
 import os
-
 import telebot
 import downloader_script as ds
 import configobj
+from info_messages import InfoMessages
 
 # TODO:
 # 1. Integration with Selenium to be able to download age restricted videos (for music lol)
@@ -16,41 +16,13 @@ API_KEY = config['API_KEY']
 
 bot = telebot.TeleBot(API_KEY)
 
-# Generic messages (might actually put them into a separate class and call them from there as it was taught in FIT2099
-
-HELP_MSG = 'Just a help info for now...'
-
-WELCOME_MSG = """\
-Hi there! I am Downloader test bot, Dev version.
-Just a kind words of greetings before we start testing!\
-"""
-
-AGE_ERROR_MSG = """\
-Video that you're trying to converted is age restricted and
-can't be downloaded at the moment (we're working very hard to resolve this issue)
-\
-"""
-
-# potentailly I can return a link which leads to a downloaded file on server or increase allowed file size
-# by using a loophole with local server.
-SIZE_ERROR_MSG = """\
-The size of the audio is more than that Telegram can handle (20MB), please choose shorter track.
-\
-"""
-
-GENERAL_ERROR_MSG = """\
-Unexpected error has occurred, please resubmit your request.
-\
-"""
-
-
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     """
     Function description: Sends welcome message upon "\start" command.
     Approach description:
     """
-    bot.reply_to(message, WELCOME_MSG)
+    bot.reply_to(message, InfoMessages.WELCOME_MSG)
 
 
 @bot.message_handler(commands=['help'])
@@ -59,7 +31,7 @@ def send_help_message(message):
     Function description: Sends message with guide and instructions upon "\help" command.
     Approach description:
     """
-    bot.send_message(message.chat.id, HELP_MSG)
+    bot.send_message(message.chat.id, InfoMessages.HELP_MSG)
 
 
 def get_file_size(file_path):
@@ -108,7 +80,7 @@ def download_audio(message):
         audio_path = f'./downloaded/{file_name}'
 
         if get_file_size(audio_path) > 50.0:
-            bot.send_message(message.chat.id, SIZE_ERROR_MSG)
+            bot.send_message(message.chat.id, InfoMessages.SIZE_ERROR_MSG)
         else:
 
             # open audio with appropriate encoding
@@ -119,9 +91,9 @@ def download_audio(message):
 
     except Exception as e:
         if "age" in str(e):
-            bot.send_message(message.chat.id, AGE_ERROR_MSG)
+            bot.send_message(message.chat.id, InfoMessages.AGE_ERROR_MSG)
         else:
-            bot.send_message(message.chat.id, GENERAL_ERROR_MSG)
+            bot.send_message(message.chat.id, InfoMessages.GENERAL_ERROR_MSG)
 
 
 @bot.message_handler(commands=['playlist'])
