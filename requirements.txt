@@ -1,5 +1,5 @@
 telebot
-pytube-15.0.0
+pytube
 moviepy
 os
 configobj
