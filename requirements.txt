@@ -1,4 +1,4 @@
-telebot-0.0.5
+telebot
 pytube-15.0.0
 moviepy
 os
