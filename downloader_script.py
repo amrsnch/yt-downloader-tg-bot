@@ -1,4 +1,5 @@
-from pytube import *
+from pytubefix import YouTube
+from pytubefix.cli import on_progress
 from moviepy.editor import *
 import os
 
@@ -77,7 +78,7 @@ def get_audio_only(url, file_path):
         link: video url
         file_path: directory where downloaded file will be stored
     """
-    yt = YouTube(url, use_oauth=True, allow_oauth_cache=True)
+    yt = YouTube(url, on_progress_callback = on_progress)
     # print(yt.streams.filter(file_extension='mp4').first())  # idk what it does but let it hang there for a while
     stream = yt.streams.filter(file_extension='mp4', progressive=True).first()
     stream.download(file_path)

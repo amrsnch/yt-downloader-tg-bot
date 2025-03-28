@@ -96,6 +96,7 @@ def download_audio(message):
             bot.send_message(message.chat.id, ErrorMessages.AGE_ERROR_MSG)
         else:
             bot.send_message(message.chat.id, ErrorMessages.GENERAL_ERROR_MSG)
+            print(str(e))
 
 
 @bot.message_handler(commands=['download'])
